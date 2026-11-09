@@ -1,755 +1,312 @@
-```html
 <!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jatayu's Victory - Alternate Ramayana Story</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Ramayana Alternate Ending: Jatayu Victory</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Yatra+One&display=swap');
-
         body {
-            font-family: 'Cinzel', serif;
-            background-color: #05050a;
-            color: #fff;
+            margin: 0;
             overflow: hidden;
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             user-select: none;
         }
-
-        .hindi-font {
-            font-family: 'Yatra One', cursive;
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
         }
-
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #d97706;
-            border-radius: 4px;
-        }
-
-        /* Glassmorphism UI */
-        .glass-panel {
-            background: rgba(15, 15, 25, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(217, 119, 6, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        }
-
-        .gold-gradient-text {
-            background: linear-gradient(135deg, #fff3b0 0%, #ffd700 50%, #b8860b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .cinematic-vignette {
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            padding: 20px;
         }
-        
-        /* Subtle Glow Animation */
-        @keyframes pulseGlow {
-            0%, 100% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6)); }
-            50% { filter: drop-shadow(0 0 25px rgba(255, 140, 0, 0.9)); }
+        .header {
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 69, 0, 0.5);
         }
-        .glow-effect {
-            animation: pulseGlow 3s infinite;
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            color: #fff;
+        }
+        #subtitle-box {
+            align-self: center;
+            background: rgba(0, 0, 0, 0.75);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px 25px;
+            max-width: 80%;
+            text-align: center;
+            color: #fff;
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            pointer-events: auto;
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff4500, #ff8c00);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #ff8c00, #ffd700);
+            color: #000;
         }
     </style>
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
-<body class="relative w-screen h-screen overflow-hidden">
-
-    <!-- 3D WebGL Canvas Container -->
-    <div id="canvas-container" class="absolute inset-0 w-full h-full z-0 cursor-grab active:cursor-grabbing"></div>
-
-    <!-- Vignette & Cinematic Overlay -->
-    <div class="cinematic-vignette absolute inset-0 z-10"></div>
-
-    <!-- UI Overlay Layer -->
-    <div class="relative z-20 w-full h-full flex flex-col justify-between p-4 md:p-6 pointer-events-none">
-        
-        <!-- Header / Title Banner -->
-        <div class="flex flex-col md:flex-row justify-between items-center w-full gap-4 pointer-events-auto">
-            <div class="glass-panel px-6 py-3 rounded-2xl border-amber-500/40 flex items-center space-x-4">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-600 to-yellow-400 flex items-center justify-center text-black font-bold text-xl shadow-lg glow-effect">
-                    <i class="fa-solid font-feather text-amber-950">⚔️</i>
-                </div>
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black tracking-wider gold-gradient-text uppercase">Jatayu's Victory</h1>
-                    <p class="text-xs text-amber-200/70 tracking-widest uppercase">Ramayana Alternate Timeline Simulation</p>
-                </div>
-            </div>
-
-            <!-- Camera View Controls -->
-            <div class="glass-panel p-1.5 rounded-xl flex space-x-1 border-amber-500/30">
-                <button id="cam-cinematic" onclick="setCameraView('cinematic')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/40 transition">
-                    <i class="fa-solid fa-video mr-1 text-amber-400"></i> Cinematic
-                </button>
-                <button id="cam-action" onclick="setCameraView('action')" class="px-3 py-1.5 text-xs font-semibold rounded-lg hover:bg-amber-500/30 transition text-gray-300">
-                    <i class="fa-solid fa-bolt mr-1 text-amber-400"></i> Action
-                </button>
-                <button id="cam-close" onclick="setCameraView('closeup')" class="px-3 py-1.5 text-xs font-semibold rounded-lg hover:bg-amber-500/30 transition text-gray-300">
-                    <i class="fa-solid fa-eye mr-1 text-amber-400"></i> Close-Up
-                </button>
-            </div>
+<body>
+    <div id="canvas-container"></div>
+    <div id="ui-overlay">
+        <div class="header">
+            <h1>रामायण: धर्म की महा विजय</h1>
+            <p>Alternate Timeline: जब जटायु ने रावण को बंदी बनाया</p>
         </div>
-
-        <!-- Middle Dialog / Subtitle Overlay -->
-        <div class="w-full flex justify-center my-auto pointer-events-auto">
-            <div id="subtitle-box" class="glass-panel max-w-2xl w-full p-5 rounded-2xl border-amber-500/50 text-center transition-all duration-500 transform translate-y-0">
-                <div class="flex justify-center items-center space-x-2 text-amber-400 text-sm font-bold tracking-widest uppercase mb-1">
-                    <span id="phase-badge">Phase 1</span>
-                    <span>•</span>
-                    <span id="phase-title">Pushpak Viman Battle</span>
-                </div>
-                <h2 id="subtitle-text" class="hindi-font text-lg md:text-2xl text-yellow-100 font-bold leading-relaxed py-1 drop-shadow-md">
-                    जटायु जी ने लंकापति रावण के पुष्पक विमान पर किया प्रचंड प्रहार!
-                </h2>
-                <div class="w-full bg-gray-800/80 rounded-full h-1.5 mt-3 overflow-hidden border border-amber-500/20">
-                    <div id="phase-progress" class="bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-500 h-full w-0 transition-all duration-300"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer / Timeline Player Controls -->
-        <div class="glass-panel p-4 rounded-2xl border-amber-500/40 w-full flex flex-col md:flex-row items-center justify-between gap-4 pointer-events-auto">
-            
-            <!-- Audio Toggle & Reset -->
-            <div class="flex items-center space-x-3">
-                <button id="btn-audio" onclick="toggleAudio()" class="w-10 h-10 rounded-xl glass-panel hover:bg-amber-500/20 flex items-center justify-center text-amber-400 border-amber-500/40 transition">
-                    <i id="audio-icon" class="fa-solid fa-volume-xmark text-lg"></i>
-                </button>
-                <button onclick="resetStoryline()" class="w-10 h-10 rounded-xl glass-panel hover:bg-amber-500/20 flex items-center justify-center text-amber-400 border-amber-500/40 transition" title="Restart Animation">
-                    <i class="fa-solid fa-rotate-right text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Play / Pause & Sequence Buttons -->
-            <div class="flex items-center space-x-3">
-                <button onclick="jumpToPhase(1)" class="px-3 py-1.5 text-xs rounded-lg glass-panel hover:bg-amber-500/30 text-amber-200 border-amber-500/30 transition">1. Sky Battle</button>
-                
-                <button id="btn-play" onclick="togglePlayPause()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-black font-extrabold text-sm shadow-lg shadow-amber-600/30 flex items-center space-x-2 transition transform active:scale-95">
-                    <i id="play-icon" class="fa-solid fa-pause"></i>
-                    <span id="play-text">PAUSE</span>
-                </button>
-
-                <button onclick="jumpToPhase(2)" class="px-3 py-1.5 text-xs rounded-lg glass-panel hover:bg-amber-500/30 text-amber-200 border-amber-500/30 transition">2. Divine Trap</button>
-                <button onclick="jumpToPhase(3)" class="px-3 py-1.5 text-xs rounded-lg glass-panel hover:bg-amber-500/30 text-amber-200 border-amber-500/30 transition">3. Victory & Rescue</button>
-            </div>
-
-            <!-- Story Credits -->
-            <div class="text-right text-xs text-amber-200/60 hidden md:block">
-                <p>3D WebGL Engine</p>
-                <p class="font-bold text-amber-400">Jatayu Rewrites History</p>
-            </div>
-        </div>
-
+        <div id="subtitle-box">युद्ध प्रारम्भ... जटायु ने पुष्पक विमान पर आक्रमण किया!</div>
+    </div>
+    <div class="controls">
+        <button class="btn" onclick="restartScene()">फिर से देखें</button>
     </div>
 
-    <!-- WebGL & Sound Engine Implementation -->
     <script>
-        // --- 1. Audio Engine (Web Audio API Procedural Sound FX) ---
-        class SoundEngine {
-            constructor() {
-                this.ctx = null;
-                this.enabled = false;
-            }
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-            }
-            playScreech() {
-                if (!this.enabled || !this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1600, this.ctx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.4);
-            }
-            playClash() {
-                if (!this.enabled || !this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(120, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.25);
-            }
-            playDivineChimes() {
-                if (!this.enabled || !this.ctx) return;
-                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.1);
-                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime + idx * 0.1);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.1 + 1.2);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(this.ctx.currentTime + idx * 0.1);
-                    osc.stop(this.ctx.currentTime + idx * 0.1 + 1.2);
-                });
-            }
-        }
+        let scene, camera, renderer, controls;
+        let viman, ravan, jatayu, sita;
+        let chains = [];
+        let clock = new THREE.Clock();
+        let phase = 0; // 0: Battle, 1: Golden Trap, 2: Ravan Captured & Sita Saved
+        let phaseTimer = 0;
 
-        const soundFX = new SoundEngine();
-
-        function toggleAudio() {
-            soundFX.init();
-            soundFX.enabled = !soundFX.enabled;
-            const icon = document.getElementById('audio-icon');
-            const btn = document.getElementById('btn-audio');
-            if(soundFX.enabled) {
-                icon.className = "fa-solid fa-volume-high text-lg text-amber-400";
-                btn.classList.add("border-amber-400");
-                soundFX.playDivineChimes();
-            } else {
-                icon.className = "fa-solid fa-volume-xmark text-lg text-gray-400";
-                btn.classList.remove("border-amber-400");
-            }
-        }
-
-        // --- 2. Three.js Scene Setup & World Generation ---
-        let scene, camera, renderer, clock;
-        let pushpakViman, ravanGroup, jatayuGroup, sitaGroup, chainGroup, particleSystem;
-        let jatayuWings = [];
-        let rishisGroup, sunMesh;
-
-        // Timeline State Variables
-        let isPlaying = true;
-        let storyTime = 0; // 0 to 30 seconds loop
-        const TOTAL_DURATION = 30; // seconds for complete 3 phases
-        let currentCameraMode = 'cinematic'; // 'cinematic', 'action', 'closeup'
-
-        function initScene() {
+        function init() {
             const container = document.getElementById('canvas-container');
-            
-            // Scene
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x1a0f05, 0.015);
 
-            // Camera
-            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 8, 30);
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x1a0f2e, 0.005);
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 35);
 
             // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
             container.appendChild(renderer.domElement);
 
-            clock = new THREE.Clock();
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
 
-            // Lighting Setup
-            const ambientLight = new THREE.AmbientLight(0xffa855, 0.6);
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
 
-            const sunLight = new THREE.DirectionalLight(0xffaa33, 2.5);
-            sunLight.position.set(-50, 40, -50);
+            const sunLight = new THREE.DirectionalLight(0xffaa44, 1.2);
+            sunLight.position.set(50, 50, -50);
             sunLight.castShadow = true;
-            sunLight.shadow.mapSize.width = 2048;
-            sunLight.shadow.mapSize.height = 2048;
             scene.add(sunLight);
 
-            // Red/Gold Rim Light for dramatic aerial battle
-            const rimLight = new THREE.PointLight(0xff4400, 3, 60);
-            rimLight.position.set(0, 10, 10);
-            scene.add(rimLight);
+            // Sky & Clouds
+            createEnvironment();
 
-            // Construct 3D Entities
-            createCloudsAndAtmosphere();
-            createSun();
-            createPushpakViman();
-            createRavan();
-            createSita();
-            createJatayu();
-            createDivineChains();
+            // Create Objects
+            viman = createPushpakViman();
+            scene.add(viman);
 
-            // Resize Event Listener
+            ravan = createRavan();
+            viman.add(ravan);
+            ravan.position.set(0, 2.5, 0);
+
+            sita = createSita();
+            viman.add(sita);
+            sita.position.set(-3, 2, -2);
+
+            jatayu = createJatayu();
+            scene.add(jatayu);
+            jatayu.position.set(0, 15, 30);
+
             window.addEventListener('resize', onWindowResize);
-            
-            // Mouse Drag Interactive Rotation
-            let isDragging = false;
-            let prevMouseX = 0;
-            container.addEventListener('mousedown', (e) => { isDragging = true; prevMouseX = e.clientX; });
-            container.addEventListener('mouseup', () => { isDragging = false; });
-            container.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    const deltaX = e.clientX - prevMouseX;
-                    scene.rotation.y += deltaX * 0.005;
-                    prevMouseX = e.clientX;
-                }
-            });
-
-            // Touch events for mobile responsiveness
-            container.addEventListener('touchstart', (e) => { isDragging = true; prevMouseX = e.touches[0].clientX; });
-            container.addEventListener('touchend', () => { isDragging = false; });
-            container.addEventListener('touchmove', (e) => {
-                if (isDragging && e.touches.length > 0) {
-                    const deltaX = e.touches[0].clientX - prevMouseX;
-                    scene.rotation.y += deltaX * 0.005;
-                    prevMouseX = e.touches[0].clientX;
-                }
-            });
+            animate();
         }
 
-        // --- 3. Programmatic Mesh Builders ---
+        function createEnvironment() {
+            // Sky Mesh
+            const skyGeo = new THREE.SphereGeometry(300, 32, 32);
+            const skyMat = new THREE.MeshBasicMaterial({
+                color: 0x2c1654,
+                side: THREE.BackSide
+            });
+            const sky = new THREE.Mesh(skyGeo, skyMat);
+            scene.add(sky);
 
-        // Sun & Sunrise Sky Background
-        function createSun() {
-            const sunGeo = new THREE.SphereGeometry(12, 32, 32);
-            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
-            sunMesh = new THREE.Mesh(sunGeo, sunMat);
-            sunMesh.position.set(-100, 20, -150);
-            scene.add(sunMesh);
-        }
-
-        // Animated Sky Particle Clouds
-        function createCloudsAndAtmosphere() {
-            const count = 300;
-            const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(count * 3);
-            const colors = new Float32Array(count * 3);
-
-            for (let i = 0; i < count * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 200;
-                positions[i + 1] = (Math.random() - 0.5) * 60 + 10;
-                positions[i + 2] = (Math.random() - 0.5) * 200;
-
-                colors[i] = 0.8 + Math.random() * 0.2;     // R
-                colors[i + 1] = 0.4 + Math.random() * 0.3; // G
-                colors[i + 2] = 0.1;                       // B
+            // Clouds
+            const cloudGeo = new THREE.DodecahedronGeometry(5, 1);
+            const cloudMat = new THREE.MeshLambertMaterial({ color: 0x4a3b69, transparent: true, opacity: 0.6 });
+            for(let i=0; i<40; i++) {
+                const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+                cloud.position.set((Math.random()-0.5)*200, (Math.random()-0.5)*50 + 10, (Math.random()-0.5)*200);
+                cloud.scale.set(Math.random()*2+1, Math.random()*1+0.5, Math.random()*2+1);
+                scene.add(cloud);
             }
-
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-            const material = new THREE.PointsMaterial({
-                size: 2.5,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.6
-            });
-
-            particleSystem = new THREE.Points(geometry, material);
-            scene.add(particleSystem);
         }
 
-        // Pushpak Viman Chariot (Golden Flying Structure)
         function createPushpakViman() {
-            pushpakViman = new THREE.Group();
+            const vimanGroup = new THREE.Group();
+            
+            // Base Chariot Body (Golden)
+            const bodyGeo = new THREE.CylinderGeometry(6, 4, 2, 8);
+            const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 });
+            const body = new THREE.Mesh(bodyGeo, goldMat);
+            vimanGroup.add(body);
 
-            // Main Platform Base (Royal Golden Lotus Hull)
-            const hullGeo = new THREE.CylinderGeometry(6, 4, 1.5, 8);
-            const goldMat = new THREE.MeshStandardMaterial({
-                color: 0xda9100,
-                metalness: 0.8,
-                roughness: 0.2,
-                emissive: 0x331c00
-            });
-            const hull = new THREE.Mesh(hullGeo, goldMat);
-            hull.castShadow = true;
-            hull.receiveShadow = true;
-            pushpakViman.add(hull);
+            // Decorative Dome
+            const domeGeo = new THREE.ConeGeometry(4, 5, 8);
+            const dome = new THREE.Mesh(domeGeo, goldMat);
+            dome.position.y = 4;
+            vimanGroup.add(dome);
 
-            // Golden Pillars & Canopy Roof
-            const pillarGeo = new THREE.CylinderGeometry(0.15, 0.15, 4);
-            for (let i = 0; i < 4; i++) {
-                const angle = (i / 4) * Math.PI * 2;
-                const pillar = new THREE.Mesh(pillarGeo, goldMat);
-                pillar.position.set(Math.cos(angle) * 3.5, 2, Math.sin(angle) * 3.5);
-                pushpakViman.add(pillar);
-            }
-
-            // Royal Dome Canopy
-            const domeGeo = new THREE.ConeGeometry(4.5, 3, 8);
-            const domeMat = new THREE.MeshStandardMaterial({ color: 0x990000, metalness: 0.5, roughness: 0.3 });
-            const dome = new THREE.Mesh(domeGeo, domeMat);
-            dome.position.y = 5.2;
-            pushpakViman.add(dome);
-
-            // Floating Magic Auras / Flags
-            const flagGeo = new THREE.BoxGeometry(0.1, 1.5, 0.8);
-            const flagMat = new THREE.MeshStandardMaterial({ color: 0xffd700 });
-            const flag = new THREE.Mesh(flagGeo, flagMat);
-            flag.position.set(0, 6.5, 0);
-            pushpakViman.add(flag);
-
-            pushpakViman.position.set(0, 0, 0);
-            scene.add(pushpakViman);
+            return vimanGroup;
         }
 
-        // 10-Headed Ravan Model Representation
         function createRavan() {
-            ravanGroup = new THREE.Group();
-
-            // Dark Armor Body
-            const bodyGeo = new THREE.CylinderGeometry(0.8, 0.6, 2.5, 8);
-            const armorMat = new THREE.MeshStandardMaterial({ color: 0x111115, metalness: 0.9, roughness: 0.2 });
-            const body = new THREE.Mesh(bodyGeo, armorMat);
-            body.position.y = 1.25;
+            const ravanGroup = new THREE.Group();
+            
+            // Armor / Body (Dark Red)
+            const bodyGeo = new THREE.CylinderGeometry(0.8, 0.6, 3, 8);
+            const darkMat = new THREE.MeshStandardMaterial({ color: 0x8b0000, metalness: 0.5 });
+            const body = new THREE.Mesh(bodyGeo, darkMat);
             ravanGroup.add(body);
 
-            // 10 Demonic Heads Array
-            const headMat = new THREE.MeshStandardMaterial({ color: 0x3d2314, roughness: 0.6 });
-            const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Glowing Red Eyes
-
-            for (let i = -4; i <= 5; i++) {
-                const headScale = i === 0 ? 1.0 : 0.65;
-                const headGeo = new THREE.SphereGeometry(0.35 * headScale, 12, 12);
+            // 10 Heads Representation
+            const headMat = new THREE.MeshStandardMaterial({ color: 0x5a3d28 });
+            for(let i = -4; i <= 5; i++) {
+                const headGeo = new THREE.SphereGeometry(i === 0 ? 0.5 : 0.35, 16, 16);
                 const head = new THREE.Mesh(headGeo, headMat);
-                
-                // Offset heads horizontally to form iconic 10 heads
-                head.position.set(i * 0.32, 2.8 + (Math.abs(i) === 0 ? 0.2 : 0), (5 - Math.abs(i)) * -0.05);
+                head.position.set(i * 0.4, 2, 0);
                 ravanGroup.add(head);
-
-                // Glowing eyes for center and side heads
-                const eye1 = new THREE.Mesh(new THREE.SphereGeometry(0.06 * headScale, 6, 6), eyeMat);
-                eye1.position.set(head.position.x - 0.1 * headScale, head.position.y + 0.05, head.position.z + 0.3 * headScale);
-                const eye2 = eye1.clone();
-                eye2.position.x = head.position.x + 0.1 * headScale;
-                ravanGroup.add(eye1);
-                ravanGroup.add(eye2);
+                
+                // Crown
+                const crownGeo = new THREE.ConeGeometry(i === 0 ? 0.4 : 0.25, 0.6, 6);
+                const crownMat = new THREE.MeshStandardMaterial({ color: 0xffd700 });
+                const crown = new THREE.Mesh(crownGeo, crownMat);
+                crown.position.set(i * 0.4, i === 0 ? 2.6 : 2.4, 0);
+                ravanGroup.add(crown);
             }
 
-            // Ravan's Sword Weapon
-            const bladeGeo = new THREE.BoxGeometry(0.1, 2.5, 0.3);
-            const bladeMat = new THREE.MeshStandardMaterial({ color: 0x666677, metalness: 0.95 });
-            const sword = new THREE.Mesh(bladeGeo, bladeMat);
-            sword.position.set(1.2, 2.0, 0.5);
-            sword.rotation.z = -Math.PI / 4;
-            sword.name = "ravanSword";
-            ravanGroup.add(sword);
-
-            // Position Ravan on Pushpak Viman
-            ravanGroup.position.set(1.5, 0.75, 0);
-            pushpakViman.add(ravanGroup);
+            return ravanGroup;
         }
 
-        // Maa Sita Model (Serene Radiant Figure)
         function createSita() {
-            sitaGroup = new THREE.Group();
-
-            // Traditional Saree Outfit Geometry
-            const bodyGeo = new THREE.CylinderGeometry(0.4, 0.7, 2.0, 12);
-            const sareeMat = new THREE.MeshStandardMaterial({ color: 0xff6600, roughness: 0.5, metalness: 0.1 });
-            const body = new THREE.Mesh(bodyGeo, sareeMat);
-            body.position.y = 1.0;
+            const sitaGroup = new THREE.Group();
+            const dressMat = new THREE.MeshStandardMaterial({ color: 0xff9900 });
+            const bodyGeo = new THREE.CylinderGeometry(0.4, 0.6, 2.2, 8);
+            const body = new THREE.Mesh(bodyGeo, dressMat);
             sitaGroup.add(body);
 
-            // Head
-            const headGeo = new THREE.SphereGeometry(0.3, 16, 16);
-            const skinMat = new THREE.MeshStandardMaterial({ color: 0xffdbac });
-            const head = new THREE.Mesh(headGeo, skinMat);
-            head.position.y = 2.2;
-            sitaGroup.add(head);
-
-            // Divine Aura Glow Sphere
-            const auraGeo = new THREE.SphereGeometry(1.6, 16, 16);
-            const auraMat = new THREE.MeshBasicMaterial({
-                color: 0xffff88,
-                transparent: true,
-                opacity: 0.25,
-                wireframe: false
-            });
+            // Divine Aura Sphere
+            const auraGeo = new THREE.SphereGeometry(1.8, 16, 16);
+            const auraMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3 });
             const aura = new THREE.Mesh(auraGeo, auraMat);
-            aura.position.y = 1.5;
             sitaGroup.add(aura);
 
-            sitaGroup.position.set(-1.8, 0.75, 0);
-            pushpakViman.add(sitaGroup);
+            return sitaGroup;
         }
 
-        // Divine Giant Bird Jatayu
         function createJatayu() {
-            jatayuGroup = new THREE.Group();
-
-            // Bird Torso / Chest
-            const bodyGeo = new THREE.ConeGeometry(1.2, 4, 8);
-            const featherMat = new THREE.MeshStandardMaterial({
-                color: 0xc46200,
-                roughness: 0.4,
-                metalness: 0.3,
-                emissive: 0x441a00
-            });
+            const jatayuGroup = new THREE.Group();
+            
+            // Divine Eagle Body
+            const bodyGeo = new THREE.ConeGeometry(1.5, 5, 8);
+            const featherMat = new THREE.MeshStandardMaterial({ color: 0xcc3300, roughness: 0.4 });
             const body = new THREE.Mesh(bodyGeo, featherMat);
-            body.rotation.x = Math.PI / 2.5;
+            body.rotation.x = Math.PI / 3;
             jatayuGroup.add(body);
 
-            // Golden Beak & Head
-            const headGeo = new THREE.SphereGeometry(0.8, 12, 12);
-            const head = new THREE.Mesh(headGeo, featherMat);
-            head.position.set(0, 0.8, 2);
-            jatayuGroup.add(head);
-
-            const beakGeo = new THREE.ConeGeometry(0.4, 1.5, 6);
-            const goldBeakMat = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.1 });
-            const beak = new THREE.Mesh(beakGeo, goldBeakMat);
-            beak.rotation.x = Math.PI / 2;
-            beak.position.set(0, 0.6, 3.2);
-            jatayuGroup.add(beak);
-
-            // Fiery Glowing Eyes
-            const eyeGeo = new THREE.SphereGeometry(0.15, 8, 8);
-            const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-            const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-            eyeL.position.set(-0.4, 1.0, 2.4);
-            const eyeR = eyeL.clone();
-            eyeR.position.x = 0.4;
-            jatayuGroup.add(eyeL);
-            jatayuGroup.add(eyeR);
-
-            // Massive Feathered Wings (Left & Right)
-            const wingGeo = new THREE.BoxGeometry(7, 0.15, 2.5);
+            // Wings
+            const wingGeo = new THREE.BoxGeometry(10, 0.2, 2.5);
+            const wingMat = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.3 });
             
-            const leftWing = new THREE.Mesh(wingGeo, featherMat);
-            leftWing.position.set(-4, 0.5, 0.5);
-            leftWing.geometry.translate(3.5, 0, 0); // Pivot point at shoulder
+            const leftWing = new THREE.Mesh(wingGeo, wingMat);
+            leftWing.position.set(-5, 0, 0);
+            leftWing.name = "leftWing";
             jatayuGroup.add(leftWing);
 
-            const rightWing = new THREE.Mesh(wingGeo, featherMat);
-            rightWing.position.set(4, 0.5, 0.5);
-            rightWing.geometry.translate(-3.5, 0, 0); // Pivot point
+            const rightWing = new THREE.Mesh(wingGeo, wingMat);
+            rightWing.position.set(5, 0, 0);
+            rightWing.name = "rightWing";
             jatayuGroup.add(rightWing);
 
-            jatayuWings = [leftWing, rightWing];
+            // Glowing Beak
+            const beakGeo = new THREE.ConeGeometry(0.5, 1.5, 4);
+            const beakMat = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+            const beak = new THREE.Mesh(beakGeo, beakMat);
+            beak.position.set(0, 0, -2.5);
+            beak.rotation.x = -Math.PI / 2;
+            jatayuGroup.add(beak);
 
-            // Initial Position in Air
-            jatayuGroup.position.set(-15, 8, 15);
-            jatayuGroup.scale.set(1.4, 1.4, 1.4);
-            scene.add(jatayuGroup);
+            return jatayuGroup;
         }
 
-        // Divine Golden Glowing Chains (Phase 2 Twist Feature)
         function createDivineChains() {
-            chainGroup = new THREE.Group();
-            const ringGeo = new THREE.TorusGeometry(0.4, 0.1, 8, 16);
-            const chainMat = new THREE.MeshStandardMaterial({
-                color: 0xffd700,
-                emissive: 0xffaa00,
-                emissiveIntensity: 0.8,
-                metalness: 0.9,
-                roughness: 0.1
-            });
-
-            // 12 Connected Glowing Rings around Ravan
-            for (let i = 0; i < 14; i++) {
-                const ring = new THREE.Mesh(ringGeo, chainMat);
-                ring.position.set(
-                    (Math.random() - 0.5) * 1.5,
-                    0.5 + i * 0.2,
-                    (Math.random() - 0.5) * 1.5
-                );
-                ring.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-                chainGroup.add(ring);
-            }
-
-            chainGroup.visible = false; // Hidden initially in Phase 1
-            ravanGroup.add(chainGroup);
-        }
-
-        // --- 4. Subtitle & Timeline State Manager ---
-        const timelineScript = [
-            {
-                startTime: 0,
-                endTime: 10,
-                phase: "Phase 1",
-                title: "Mid-Air Sky Battle",
-                text: "जटायु जी ने गगन में हुंकार भरते हुए रावण के पुष्पक विमान पर प्रहार किया!",
-                camPosition: { x: 0, y: 8, z: 28 },
-                camTarget: { x: 0, y: 2, z: 0 }
-            },
-            {
-                startTime: 10,
-                endTime: 20,
-                phase: "Phase 2",
-                title: "Divine Trap Twist",
-                text: "ऐतिहासिक मोड़! जटायु ने रावण की खड्ग निष्फल की और उसे दिव्य स्वर्ण पाश (दिव्य जंजीरों) में बंदी बना लिया!",
-                camPosition: { x: 4, y: 4, z: 10 },
-                camTarget: { x: 1.5, y: 2, z: 0 }
-            },
-            {
-                startTime: 20,
-                endTime: 30,
-                phase: "Phase 3",
-                title: "Rescue & Victory Flight",
-                text: "विजयी जटायु जी ने माता सीता को सकुशल मुक्त कराया और सूर्योदय की ओर उड़ चले। धर्म की जय हुई!",
-                camPosition: { x: -6, y: 6, z: 18 },
-                camTarget: { x: -2, y: 3, z: 0 }
-            }
-        ];
-
-        function updateTimeline(delta) {
-            if (!isPlaying) return;
-
-            storyTime += delta;
-            if (storyTime >= TOTAL_DURATION) {
-                storyTime = 0; // Loop entire sequence
-            }
-
-            // Update Progress Bar UI
-            const progressPercent = (storyTime / TOTAL_DURATION) * 100;
-            document.getElementById('phase-progress').style.width = `${progressPercent}%`;
-
-            // Identify current phase
-            const currentStep = timelineScript.find(step => storyTime >= step.startTime && storyTime < step.endTime) || timelineScript[0];
-            
-            document.getElementById('phase-badge').innerText = currentStep.phase;
-            document.getElementById('phase-title').innerText = currentStep.title;
-            document.getElementById('subtitle-text').innerText = currentStep.text;
-
-            // Trigger Sound Effects on key timeline transitions
-            if (Math.abs(storyTime - 2) < 0.05) soundFX.playScreech();
-            if (Math.abs(storyTime - 10.5) < 0.05) {
-                soundFX.playClash();
-                soundFX.playDivineChimes();
-            }
-
-            // --- Phase Specific Animations & Transformations ---
-
-            // Wing Flapping Physics
-            const flapSpeed = storyTime < 20 ? 12 : 5;
-            const wingAngle = Math.sin(storyTime * flapSpeed) * 0.4;
-            if (jatayuWings[0] && jatayuWings[1]) {
-                jatayuWings[0].rotation.z = wingAngle;
-                jatayuWings[1].rotation.z = -wingAngle;
-            }
-
-            // Pushpak Viman Subtle Floating Sway
-            pushpakViman.position.y = Math.sin(storyTime * 1.5) * 0.4;
-            pushpakViman.rotation.z = Math.sin(storyTime * 0.8) * 0.03;
-
-            // PHASE 1: Jatayu Swooping Battle Animation (0 - 10s)
-            if (storyTime < 10) {
-                const progress = storyTime / 10;
-                // Circle around Pushpak Viman
-                const angle = progress * Math.PI * 3;
-                jatayuGroup.position.x = Math.cos(angle) * 14;
-                jatayuGroup.position.z = Math.sin(angle) * 14;
-                jatayuGroup.position.y = 5 + Math.sin(storyTime * 4) * 3;
-                jatayuGroup.lookAt(pushpakViman.position);
-
-                chainGroup.visible = false;
-                ravanGroup.rotation.y = 0;
-            }
-            // PHASE 2: Alternate Twist - Capture Ravan in Divine Chains (10 - 20s)
-            else if (storyTime >= 10 && storyTime < 20) {
-                // Jatayu hovers closely over Ravan
-                jatayuGroup.position.set(2.5, 4.5, 2.0);
-                jatayuGroup.lookAt(ravanGroup.position);
-
-                // Reveal Divine Chains around Ravan
-                chainGroup.visible = true;
-                chainGroup.rotation.y += 0.03; // Rotating gold magic chains
-
-                // Disarm Ravan (Drop Sword)
-                const sword = ravanGroup.getObjectByName("ravanSword");
-                if (sword) {
-                    sword.rotation.z = -Math.PI / 1.1;
-                    sword.position.y = 0.2;
-                }
-
-                // Ravan shakes in trap
-                ravanGroup.rotation.y = Math.sin(storyTime * 20) * 0.1;
-            }
-            // PHASE 3: Victory & Rescue - Flying into Sunrise with Sita (20 - 30s)
-            else {
-                // Jatayu lands next to Sita and flies off towards the Sun
-                const rescueProgress = (storyTime - 20) / 10;
-
-                // Move Sita onto Jatayu back
-                sitaGroup.position.set(0, 1.8, 0);
-                jatayuGroup.add(sitaGroup);
-
-                // Fly towards Sun
-                jatayuGroup.position.x = -15 + rescueProgress * -40;
-                jatayuGroup.position.y = 8 + rescueProgress * 20;
-                jatayuGroup.position.z = -15 + rescueProgress * -80;
-                jatayuGroup.lookAt(sunMesh.position);
-
-                // Ravan stays bound in chains on Pushpak Viman
-                chainGroup.visible = true;
-            }
-
-            // Camera Controller Positioning
-            if (currentCameraMode === 'cinematic') {
-                camera.position.x = THREE.MathUtils.lerp(camera.position.x, currentStep.camPosition.x + Math.sin(storyTime * 0.5) * 3, 0.03);
-                camera.position.y = THREE.MathUtils.lerp(camera.position.y, currentStep.camPosition.y, 0.03);
-                camera.position.z = THREE.MathUtils.lerp(camera.position.z, currentStep.camPosition.z, 0.03);
-                camera.lookAt(currentStep.camTarget.x, currentStep.camTarget.y, currentStep.camTarget.z);
+            const chainMat = new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xffaa00, emissiveIntensity: 0.8 });
+            for(let i = 0; i < 8; i++) {
+                const chainGeo = new THREE.TorusGeometry(0.6, 0.15, 8, 16);
+                const ring = new THREE.Mesh(chainGeo, chainMat);
+                ring.position.copy(ravan.position);
+                ring.position.y += (i * 0.4) - 1;
+                ring.rotation.x = Math.PI / 2;
+                viman.add(ring);
+                chains.push(ring);
             }
         }
 
-        // Camera Preset Switcher
-        function setCameraView(mode) {
-            currentCameraMode = mode;
-            document.querySelectorAll('[id^="cam-"]').forEach(btn => {
-                btn.classList.remove('bg-amber-500/40', 'text-white');
-                btn.classList.add('text-gray-300');
-            });
-            document.getElementById(`cam-${mode}`).classList.add('bg-amber-500/40', 'text-white');
-
-            if (mode === 'action') {
-                camera.position.set(0, 12, 12);
-                camera.lookAt(0, 0, 0);
-            } else if (mode === 'closeup') {
-                camera.position.set(3, 4, 6);
-                camera.lookAt(1.5, 2, 0);
-            }
+        function updateSubtitles(text) {
+            document.getElementById('subtitle-box').innerText = text;
         }
 
-        // Timeline Control Functions
-        function togglePlayPause() {
-            isPlaying = !isPlaying;
-            const btnText = document.getElementById('play-text');
-            const btnIcon = document.getElementById('play-icon');
-            if (isPlaying) {
-                btnText.innerText = "PAUSE";
-                btnIcon.className = "fa-solid fa-pause";
-            } else {
-                btnText.innerText = "PLAY";
-                btnIcon.className = "fa-solid fa-play";
-            }
-        }
-
-        function jumpToPhase(phaseNumber) {
-            if (phaseNumber === 1) storyTime = 0;
-            if (phaseNumber === 2) storyTime = 10;
-            if (phaseNumber === 3) storyTime = 20;
-            isPlaying = true;
-        }
-
-        function resetStoryline() {
-            storyTime = 0;
-            // Restore Sita back to Pushpak Viman if moved
-            if (sitaGroup && pushpakViman) {
-                sitaGroup.position.set(-1.8, 0.75, 0);
-                pushpakViman.add(sitaGroup);
-            }
-            isPlaying = true;
+        function restartScene() {
+            phase = 0;
+            phaseTimer = 0;
+            jatayu.position.set(0, 15, 30);
+            ravan.position.set(0, 2.5, 0);
+            sita.position.set(-3, 2, -2);
+            chains.forEach(c => viman.remove(c));
+            chains = [];
+            updateSubtitles("युद्ध प्रारम्भ... जटायु ने पुष्पक विमान पर आक्रमण किया!");
         }
 
         function onWindowResize() {
@@ -758,28 +315,64 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        // --- 5. Main Render Loop ---
         function animate() {
             requestAnimationFrame(animate);
             const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
 
-            // Rotate Cloud Particles slowly
-            if (particleSystem) {
-                particleSystem.rotation.y += delta * 0.02;
+            // Viman Floating Motion
+            viman.position.y = Math.sin(time * 2) * 0.8;
+            viman.rotation.y += 0.005;
+
+            // Wing Flapping Animation
+            const leftWing = jatayu.getObjectByName("leftWing");
+            const rightWing = jatayu.getObjectByName("rightWing");
+            if(leftWing && rightWing) {
+                leftWing.rotation.z = Math.sin(time * 8) * 0.3;
+                rightWing.rotation.z = -Math.sin(time * 8) * 0.3;
             }
 
-            // Update Story Timeline & Transformations
-            updateTimeline(delta);
+            // Timeline Animation Logic
+            phaseTimer += delta;
 
+            if (phase === 0) { // Attack Phase
+                jatayu.position.x = Math.sin(time * 3) * 12;
+                jatayu.position.z = Math.cos(time * 3) * 12 + 5;
+                jatayu.lookAt(viman.position);
+
+                if (phaseTimer > 5) {
+                    phase = 1;
+                    phaseTimer = 0;
+                    createDivineChains();
+                    updateSubtitles("महा ट्विस्ट! जटायु जी ने दिव्यास्त्र प्रकट कर रावण को स्वर्णिम पाश (जाकी) में बांध लिया!");
+                }
+            } 
+            else if (phase === 1) { // Capturing Ravan
+                jatayu.position.lerp(new THREE.Vector3(0, 8, 0), 0.05);
+                jatayu.lookAt(ravan.position);
+
+                // Tighten Chains on Ravan
+                chains.forEach((ring, index) => {
+                    ring.scale.set(0.8 + Math.sin(time * 10) * 0.05, 0.8 + Math.sin(time * 10) * 0.05, 1);
+                });
+
+                if (phaseTimer > 5) {
+                    phase = 2;
+                    phaseTimer = 0;
+                    updateSubtitles("विजय! रावण परास्त होकर बंदी बन गया। माता सीता पूरी तरह सुरक्षित हैं!");
+                }
+            } 
+            else if (phase === 2) { // Rescue Flight
+                // Sita moves under Jatayu's protection
+                sita.position.lerp(new THREE.Vector3(0, 10, -2), 0.03);
+                jatayu.position.y = 12 + Math.sin(time * 2) * 0.5;
+            }
+
+            controls.update();
             renderer.render(scene, camera);
         }
 
-        // Initialize World on Load
-        window.onload = function() {
-            initScene();
-            animate();
-        };
+        window.onload = init;
     </script>
 </body>
 </html>
-```
